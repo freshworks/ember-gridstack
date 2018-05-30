@@ -19,27 +19,21 @@ module.exports = {
       'ie', 'keycode', 'labels', 'jquery-1-7', 'plugin', 'safe-active-element',
       'safe-blur', 'scroll-parent', 'tabbable', 'unique-id', 'widget'
     ].forEach(function(module) {
-      app.import({
-        development: app.bowerDirectory + '/jquery-ui/ui/' + module + '.js',
-        production:  app.bowerDirectory + '/jquery-ui/ui/minified/' + module + '.min.js'
-      });
+      app.import(app.bowerDirectory + '/jquery-ui/ui/' + module + '.js');
     });
 
     [ 'mouse', 'draggable', 'droppable', 'resizable' ].forEach(function(module) {
-      app.import({
-        development: app.bowerDirectory + '/jquery-ui/ui/widgets/' + module + '.js',
-        production:  app.bowerDirectory + '/jquery-ui/ui/widgets/minified/' + module + '.min.js'
-      });
+      app.import(app.bowerDirectory + '/jquery-ui/ui/widgets/' + module + '.js');
     });
 
-    let config = this.getOptions();
-    if (config.exclude.indexOf('jquery.ui.touch-punch') < 0) {
-      app.import({
-        development: app.bowerDirectory + '/jquery.ui.touch-punch/dist/jquery.ui.touch-punch.js',
-        production: app.bowerDirectory + '/jquery.ui.touch-punch/dist/jquery.ui.touch-punch.min.js'
-      });
-    }
-
+    // let config = this.getOptions();
+    // if (config.exclude.indexOf('jquery.ui.touch-punch') < 0) {
+    //   app.import({
+    //     development: app.bowerDirectory + '/jquery.ui.touch-punch/dist/jquery.ui.touch-punch.js',
+    //     production: app.bowerDirectory + '/jquery.ui.touch-punch/dist/jquery.ui.touch-punch.min.js'
+    //   });
+    // }
+    //
 
     // Gridstack
     app.import({
