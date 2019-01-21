@@ -1,6 +1,8 @@
+import Component from '@ember/component';
+import { run, next } from '@ember/runloop';
+import { A, isArray } from '@ember/array';
 import { moduleForComponent, test } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
-import Ember from 'ember';
 
 moduleForComponent('grid-stack', 'Integration | Component | grid stack', {
   integration: true
@@ -27,12 +29,16 @@ test('gridstack renders', function(assert) {
 test('gridstack with items', function(assert) {
   assert.expect(4);
 
-  this.set('items', Ember.A([1, 2]));
+  this.set('items', A([1, 2]));
 
   this.render(hbs`
     {{#grid-stack}}
       {{#each items as |item|}}
-        {{grid-stack-item}}
+        {{#grid-stack-item
+          options=(hash x=0 y=item)
+        }}
+          {{item}}
+        {{/grid-stack-item}}
       {{/each}}
     {{/grid-stack}}
   `);
@@ -41,7 +47,7 @@ test('gridstack with items', function(assert) {
     2,
   'initial grid-stack-item components are initialized by gridstack');
 
-  Ember.run(() => {
+  run(() => {
     this.get('items').pushObject(3);
   });
 
@@ -49,13 +55,13 @@ test('gridstack with items', function(assert) {
     3,
   'new grid-stack-item components are initialized by gridstack when added through an each loop');
 
-  // Since gridstack defaults to adding new items vertically, and each item has height = 1,
+  // Since each gridstack item has height = 1,
   // we can check how many items are recognized by using the height property
   assert.equal(this.$('.grid-stack').attr('data-gs-current-height'),
     3,
   'gridstack recognizes new items');
 
-  Ember.run(() => {
+  run(() => {
     this.get('items').popObject();
   });
 
@@ -109,7 +115,7 @@ test('grid stack item events', function(assert) {
   assert.expect(1);
 
   // Create fake component for listening to events
-  let eventListener = Ember.Component.extend({
+  let eventListener = Component.extend({
         didInsertElement() {
           this._super(...arguments);
           this.get('containerComponent').$().on('resizestop', () => {
@@ -129,12 +135,12 @@ test('grid stack item events', function(assert) {
     {{/grid-stack}}
   `);
 
-  Ember.run.next(() => {
+  next(() => {
     this.$('.grid-stack-item').trigger('resizestop');
   });
 
   // Check that the action is not called when a different item is resized
-  Ember.run(() => {
+  run(() => {
     this.$('.a-different-item').trigger('resizestop');
   });
 });
@@ -142,25 +148,27 @@ test('grid stack item events', function(assert) {
 test('onChange action', function(assert) {
   assert.expect(6);
 
-  this.set('items', Ember.A([1]));
+  this.set('items', A([1]));
 
   /* == Test `change` event handler when `didUpdateGrid` attr not provided == */
 
   this.render(hbs`
     {{#grid-stack}}
       {{#each items as |item|}}
-        {{#grid-stack-item}}
+        {{#grid-stack-item
+          options=(hash x=0 y=item)
+        }}
           {{item}}
         {{/grid-stack-item}}
       {{/each}}
     {{/grid-stack}}
   `);
 
-  Ember.run(() => this.get('items').pushObject(2));
+  run(() => this.get('items').pushObject(2));
 
   /* == Test `change` event handler when `didUpdateGrid` attr provided == */
 
-  this.set('items', Ember.A([1]));
+  this.set('items', A([1]));
 
   this.set('onChange', (event, items) => {
     assert.ok('`onChange` fires when gridstack `change` event fires');
@@ -169,7 +177,7 @@ test('onChange action', function(assert) {
       'change',
     '`onChange` action provides the `event` argument');
 
-    assert.ok(Ember.isArray(items),
+    assert.ok(isArray(items),
       '`onChange` action provides the `items` argument');
   });
 
@@ -178,7 +186,9 @@ test('onChange action', function(assert) {
       onChange=(action onChange)
     }}
       {{#each items as |item|}}
-        {{#grid-stack-item}}
+        {{#grid-stack-item
+          options=(hash x=0 y=item)
+        }}
           {{item}}
         {{/grid-stack-item}}
       {{/each}}
@@ -186,6 +196,6 @@ test('onChange action', function(assert) {
   `);
 
   //Update gridstack
-  Ember.run(() => this.get('items').pushObject(2));
-  Ember.run(() => this.get('items').removeObject(2));
+  run(() => this.get('items').pushObject(2));
+  run(() => this.get('items').removeObject(2));
 });
